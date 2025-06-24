@@ -1,0 +1,44 @@
+Question 1: Find Employees Earning More Than Their Department’s Average Salary
+==============================================================================
+with dept_avgsalary as(
+  select dept_id, avg(salary) as avg_Salary
+  from Employees
+  group by dept_id
+)
+select e.emp_id,e.dept_id,e.salary from Employees e
+join Departments d on e.dept_id = d.dept_id 
+join dept_avgsalary da on e.dept_id = da.dept_id
+where e.salary > da.avg_Salary;
+
+Question 2: Find Employees Who Worked on All Projects in Their Department
+=========================================================================
+SELECT e.emp_id, e.emp_name
+FROM Employees e
+JOIN EmployeeProjects ep ON e.emp_id = ep.emp_id
+JOIN Projects p ON ep.project_id = p.project_id
+WHERE p.dept_id = e.dept_id
+GROUP BY e.emp_id, e.emp_name, e.dept_id
+HAVING COUNT(p.project_id) = (
+    SELECT COUNT(*)
+    FROM Projects p2
+    WHERE p2.dept_id = e.dept_id
+);
+
+Question 3: Find the Highest-Paid Employee in Each Department Who Started After 2020
+=====================================================================================
+select e.emp_id, e.emp_name, e.dept_id, e.salary, e.hire_date, d.dept_name
+from employees e
+join departments d on e.dept_id = d.dept_id
+where e.salary = (
+    seelct MAX(salary)
+    from Employees
+    where hire_date > '2020-01-01'
+);
+
+Question 4: Find Departments Where All Employees Earn Above a Certain Threshold
+===============================================================================
+select *
+from Departments d
+join Employees e on d.dept_id = e.dept_id
+group by d.dept_id, d.dept_name
+having MIN(e.salary) > 50000;
